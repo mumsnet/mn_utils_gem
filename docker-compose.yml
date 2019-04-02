@@ -1,0 +1,14 @@
+version: '3.7'
+services:
+  test:
+    build: .
+    volumes:
+      - .:/mn_utils_gem
+    tty: true
+    stdin_open: true
+#    env_file:
+#      - .env
+networks:
+  default:
+    external:
+      name: mn_network

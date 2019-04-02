@@ -1,3 +1,6 @@
+# rspec failure tracking
+.rspec_status
+
 *.gem
 *.rbc
 /.config
@@ -30,7 +33,7 @@ build-iPhoneSimulator/
 # vendor/Pods/
 
 ## Documentation cache and generated files:
-/.yardoc/
+/.yardoc
 /_yardoc/
 /doc/
 /rdoc/
@@ -48,3 +51,5 @@ build-iPhoneSimulator/
 
 # unless supporting rvm < 1.11.0 or doing something fancy, ignore this:
 .rvmrc
+
+.idea
