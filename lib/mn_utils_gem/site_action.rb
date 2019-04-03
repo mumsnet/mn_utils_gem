@@ -85,7 +85,7 @@ module MnUtils
 
       # validate the environment variables we need
       raise ArgumentError, "ENV['SRV_CODE'] cannot be blank" \
-        if ENV.key? 'SRV_CODE'
+        unless ENV.key? 'SRV_CODE'
 
       # setup the full payload
       full_payload = payload.dup
