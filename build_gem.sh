@@ -2,6 +2,12 @@
 
 set -e
 
+if [ ! -f Gemfile.lock ]; then
+  touch Gemfile.lock
+fi
+if [ ! -f .env ]; then
+  touch .env
+fi
 docker-compose build
 docker-compose run test bundle
 docker-compose run test bundle exec rake install

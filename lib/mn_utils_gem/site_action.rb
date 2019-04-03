@@ -83,21 +83,17 @@ module MnUtils
           unless value.is_a?(String)
       end
 
-      # validate the environment variables we need
-      raise ArgumentError, "ENV['SRV_CODE'] cannot be blank" \
-        unless ENV.key? 'SRV_CODE'
-
       # setup the full payload
       full_payload = payload.dup
       full_payload[:short_message] = message
       full_payload[:_site_action_group] = @_site_action_group_map[site_action]
       full_payload[:_site_action] = site_action
-      full_payload[:_srv_code] = ENV['SRV_CODE']
 
-      # add the request ID if available
-      if RequestStore.store[:request_id]
-        full_payload[:_request_id] = RequestStore.store[:request_id]
-      end
+      # add other data to the payload if available
+      full_payload[:_srv_code] = ENV['SRV_CODE'] if ENV.key? 'SRV_CODE'
+      full_payload[:_site_hostname] = ENV['SITE_HOSTNAME'] if ENV.key? 'SITE_HOSTNAME'
+      full_payload[:_request_id] = RequestStore.store[:request_id] if RequestStore.store[:request_id]
+      full_payload[:_remote_ip] = RequestStore.store[:remote_ip] if RequestStore.store[:remote_ip]
 
       # send it off
       send_to_graylog full_payload
@@ -124,13 +120,18 @@ module MnUtils
           value: 1,
           unit: "Count"
       }]
-      if ENV.key? 'CLOUDWATCH_ROOT_NAMESPACE'
+      if ENV.key? ('CLOUDWATCH_ROOT_NAMESPACE')
         root_namespace = ENV['CLOUDWATCH_ROOT_NAMESPACE']
         second_namespace = payload[:_site_action_group]
         namespace = "#{root_namespace}/#{second_namespace}"
+        dimension_value = payload[:_site_hostname]
         cw = Aws::CloudWatch::Client.new
         cw.put_metric_data({
             namespace: namespace,
+            dimensions: [{
+                name: "site_hostname",
+                value: dimension_value
+            }],
             metric_data: metric_data
         })
       else
