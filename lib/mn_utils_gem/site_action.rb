@@ -53,7 +53,7 @@ module MnUtils
 
       # this creates a reverse map of all site actions and their corresponding group
       # for quick lookups by the code
-      @_site_action_group_map = Hash[*(@_site_actions_and_groups.map {|k,v| v.map {|x| [x, k]}}.flatten)].freeze
+      @_site_action_group_map = Hash[*(@_site_actions_and_groups.map {|k, v| v.map {|x| [x, k]}}.flatten)].freeze
     end
 
     def log(message, site_action, payload = {})
@@ -103,42 +103,43 @@ module MnUtils
       send_to_graylog full_payload
       send_to_cloudwatch full_payload
     end
-  end
 
-  private
+    private
 
-  def send_to_graylog(payload)
-    if ENV.key?('GRAYLOG_GELF_UDP_HOST') && ENV.key?('GRAYLOG_GELF_UDP_PORT')
-      n = GELF::Notifier.new(ENV['GRAYLOG_GELF_UDP_HOST'], ENV['GRAYLOG_GELF_UDP_PORT'])
-      n.notify! payload
-    else
-      Rails.logger.debug("Payload for Graylog: #{payload}")
+    def send_to_graylog(payload)
+      if ENV.key?('GRAYLOG_GELF_UDP_HOST') && ENV.key?('GRAYLOG_GELF_UDP_PORT')
+        n = GELF::Notifier.new(ENV['GRAYLOG_GELF_UDP_HOST'], ENV['GRAYLOG_GELF_UDP_PORT'])
+        n.notify! payload
+      else
+        Rails.logger.debug("Payload for Graylog: #{payload}")
+      end
+    rescue Exception => e
+      Rails.logger.error e
     end
-  rescue Exception => e
-    Rails.logger.error e
-  end
 
-  def send_to_cloudwatch(payload)
-    metric_name = payload[:_site_action]
-    metric_data = [{
-        metric_name: metric_name,
-        value: 1,
-        unit: "Count"
-    }]
-    if ENV.key?'CLOUDWATCH_ROOT_NAMESPACE'
-      root_namespace = ENV['CLOUDWATCH_ROOT_NAMESPACE']
-      second_namespace = payload[:_site_action_group]
-      namespace = "#{root_namespace}/#{second_namespace}"
-      cw = Aws::CloudWatch::Client.new
-      cw.put_metric_data({
-          namespace: namespace,
-          metric_data: metric_data
-      })
-    else
-      Rails.logger.debug("Payload for Cloudwatch: #{metric_data}")
+    def send_to_cloudwatch(payload)
+      metric_name = payload[:_site_action]
+      metric_data = [{
+          metric_name: metric_name,
+          value: 1,
+          unit: "Count"
+      }]
+      if ENV.key? 'CLOUDWATCH_ROOT_NAMESPACE'
+        root_namespace = ENV['CLOUDWATCH_ROOT_NAMESPACE']
+        second_namespace = payload[:_site_action_group]
+        namespace = "#{root_namespace}/#{second_namespace}"
+        cw = Aws::CloudWatch::Client.new
+        cw.put_metric_data({
+            namespace: namespace,
+            metric_data: metric_data
+        })
+      else
+        Rails.logger.debug("Payload for Cloudwatch: #{metric_data}")
+      end
+    rescue Exception => e
+      Rails.logger.error e
     end
-  rescue Exception => e
-    Rails.logger.error e
-  end
 
-end
+  end # of class SiteAction
+
+end # of module MnUtils
