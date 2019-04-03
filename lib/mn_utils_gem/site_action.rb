@@ -135,7 +135,7 @@ module MnUtils
           metric_data: metric_data
       })
     else
-      Rails.logger.debug("Payload for Cloudwatch #{metric_data}")
+      Rails.logger.debug("Payload for Cloudwatch: #{metric_data}")
     end
   rescue Exception => e
     Rails.logger.error e
