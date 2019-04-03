@@ -13,11 +13,13 @@ Gem::Specification.new do |spec|
   # Specify which files should be added to the gem when it is released.
   spec.files         = [
       'lib/mn_utils_gem.rb',
-      'lib/mn_utils_gem/version.rb'
+      'lib/mn_utils_gem/version.rb',
+      'lib/mn_utils_gem/site_action.rb'
   ]
   spec.require_paths = ["lib"]
 
   spec.add_runtime_dependency 'gelf'
+  spec.add_runtime_dependency 'aws-sdk-cloudwatch'
   spec.add_runtime_dependency 'request_store'
 
   spec.add_development_dependency "bundler", "~> 1.17"

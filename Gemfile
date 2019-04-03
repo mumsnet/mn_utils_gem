@@ -6,6 +6,7 @@ git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
 gemspec
 
 gem 'gelf'
+gem 'aws-sdk-cloudwatch'
 gem 'request_store'
 
 group :development, :test do
