@@ -83,6 +83,22 @@ module MnUtils
           unless value.is_a?(String)
       end
 
+      # validate required environment variables if we are in production
+      if ENV.key?( 'CLOUDWATCH_ROOT_NAMESPACE') \
+          || ENV.key?('GRAYLOG_GELF_UDP_HOST') \
+          || ENV.key?('GRAYLOG_GELF_UDP_PORT')
+        raise ArgumentError, "ENV['CLOUDWATCH_ROOT_NAMESPACE'] is required" \
+          unless ENV.key? 'CLOUDWATCH_ROOT_NAMESPACE'
+        raise ArgumentError, "ENV['GRAYLOG_GELF_UDP_HOST'] is required" \
+          unless ENV.key? 'GRAYLOG_GELF_UDP_HOST'
+        raise ArgumentError, "ENV['GRAYLOG_GELF_UDP_PORT'] is required" \
+          unless ENV.key? 'GRAYLOG_GELF_UDP_PORT'
+        raise ArgumentError, "ENV['SITE_HOSTNAME'] is required" \
+          unless ENV.key? 'SITE_HOSTNAME'
+        raise ArgumentError, "ENV['SRV_CODE'] is required" \
+          unless ENV.key? 'SRV_CODE'
+      end
+
       # setup the full payload
       full_payload = payload.dup
       full_payload[:short_message] = message
@@ -114,28 +130,27 @@ module MnUtils
     end
 
     def send_to_cloudwatch(payload)
-      metric_name = payload[:_site_action]
-      metric_data = [{
-          metric_name: metric_name,
-          value: 1,
-          unit: "Count"
-      }]
+      cloudwatch_payload = {
+          namespace: "mn/test",
+          metric_data: [{
+              metric_name: payload[:_site_action],
+              dimensions: [{
+                  name: "site_hostname",
+                  value: "localhost"
+              }],
+              value: 1,
+              unit: "Count"
+          }]
+      }
       if ENV.key? ('CLOUDWATCH_ROOT_NAMESPACE')
         root_namespace = ENV['CLOUDWATCH_ROOT_NAMESPACE']
         second_namespace = payload[:_site_action_group]
-        namespace = "#{root_namespace}/#{second_namespace}"
-        dimension_value = payload[:_site_hostname]
+        cloudwatch_payload[:namespace] = "#{root_namespace}/#{second_namespace}"
+        cloudwatch_payload[:metric_data][0][:dimensions][0][:value] = payload[:_site_hostname]
         cw = Aws::CloudWatch::Client.new
-        cw.put_metric_data({
-            namespace: namespace,
-            dimensions: [{
-                name: "site_hostname",
-                value: dimension_value
-            }],
-            metric_data: metric_data
-        })
+        cw.put_metric_data(cloudwatch_payload)
       else
-        Rails.logger.debug("Payload for Cloudwatch: #{metric_data}")
+        Rails.logger.debug("Payload for Cloudwatch: #{cloudwatch_payload}")
       end
     rescue Exception => e
       Rails.logger.error e
