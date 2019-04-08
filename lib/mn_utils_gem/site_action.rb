@@ -51,9 +51,19 @@ module MnUtils
           ],
       }.freeze
 
-      # this creates a reverse map of all site actions and their corresponding group
+      # check for duplicates, and throw a tantrum if any are found
+      tmp_map = {}
+      stuff.each do |k, arr|
+        arr.each do |v|
+          raise ArgumentError, "Site action #{v} is declared more than once" \
+              if tmp_map.key? v
+          tmp_map[v] = true
+        end
+      end
+
+      # create a reverse map of all site actions and their corresponding group
       # for quick lookups by the code
-      @_site_action_group_map = Hash[*(@_site_actions_and_groups.map {|k, v| v.map {|x| [x, k]}}.flatten)].freeze
+      @_site_action_group_map = Hash[*(@_site_actions_and_groups.map {|k, arr| arr.map {|v| [v, k]}}.flatten)].freeze
     end
 
     def log(message, site_action, payload = {})
