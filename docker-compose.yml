@@ -8,7 +8,3 @@ services:
     stdin_open: true
 #    env_file:
 #      - .env
-networks:
-  default:
-    external:
-      name: mn_network
