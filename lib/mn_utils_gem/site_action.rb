@@ -83,6 +83,10 @@ module MnUtilsLogging
               :admin_email_success,
               :admin_email_fail,
           ],
+          email: [
+              :send_email_success,
+              :send_email_fail
+          ],
           misc: [
               :unknown_email_success,
               :unknown_email_fail
@@ -147,10 +151,12 @@ module MnUtilsLogging
           unless ENV.key? 'SRV_CODE'
       end
 
+      site_action_group = @_site_action_group_map[site_action]
+
       # setup the full payload
       full_payload = payload.dup
       full_payload[:short_message] = message
-      full_payload[:_site_action_group] = @_site_action_group_map[site_action]
+      full_payload[:_site_action_group] = site_action_group
       full_payload[:_site_action] = site_action
 
       # add other data to the payload if available
@@ -161,7 +167,26 @@ module MnUtilsLogging
 
       # send it off
       send_to_graylog full_payload
-      send_to_cloudwatch full_payload
+      send_to_cloudwatch(site_action_group, site_action, full_payload[:_site_hostname])
+    end
+
+    def log_metric_only(site_action)
+      
+      # validate the parameters
+      raise ArgumentError, 'site_action must be a symbol' \
+        unless site_action.is_a?(Symbol)
+      raise ArgumentError, 'site_action value is not in allowed list' \
+        unless @_site_action_group_map.key? site_action
+
+      # validate required environment variables if we are in production
+      if ENV.key?( 'CLOUDWATCH_ROOT_NAMESPACE')
+        raise ArgumentError, "ENV['SITE_HOSTNAME'] is required" \
+          unless ENV.key? 'SITE_HOSTNAME'
+      end
+
+      site_action_group = @_site_action_group_map[site_action]
+
+      send_to_cloudwatch(site_action_group, site_action, ENV['SITE_HOSTNAME'])
     end
 
     private
@@ -177,11 +202,11 @@ module MnUtilsLogging
       Rails.logger.error e
     end
 
-    def send_to_cloudwatch(payload)
+    def send_to_cloudwatch(site_action_group, site_action, site_hostname)
       cloudwatch_payload = {
           namespace: "mn/test",
           metric_data: [{
-              metric_name: payload[:_site_action],
+              metric_name: site_action,
               dimensions: [{
                   name: "site_hostname",
                   value: "localhost"
@@ -192,9 +217,9 @@ module MnUtilsLogging
       }
       if ENV.key? ('CLOUDWATCH_ROOT_NAMESPACE')
         root_namespace = ENV['CLOUDWATCH_ROOT_NAMESPACE']
-        second_namespace = payload[:_site_action_group]
+        second_namespace = site_action_group
         cloudwatch_payload[:namespace] = "#{root_namespace}/#{second_namespace}"
-        cloudwatch_payload[:metric_data][0][:dimensions][0][:value] = payload[:_site_hostname]
+        cloudwatch_payload[:metric_data][0][:dimensions][0][:value] = site_hostname
         cw = Aws::CloudWatch::Client.new
         cw.put_metric_data(cloudwatch_payload)
       else
