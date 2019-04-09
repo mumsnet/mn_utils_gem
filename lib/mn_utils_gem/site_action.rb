@@ -127,8 +127,8 @@ module MnUtilsLogging
           unless key_string.length >= 2
         raise ArgumentError, "payload key cannot be _id" \
           if key_string == '_id'
-        raise ArgumentError, "payload value for key #{key} must be a string" \
-          unless value.is_a?(String)
+        raise ArgumentError, "payload value for key #{key} must be a string or symbol" \
+          unless value.is_a?(String) || value.is_a?(Symbol)
       end
 
       # validate required environment variables if we are in production
