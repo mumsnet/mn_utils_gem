@@ -6,9 +6,9 @@ require 'singleton'
 # SiteAction class to log important site actions to Graylog
 # and send a matching metric to Cloudwatch
 #
-# usage: MnUtils::SiteAction.instance.log(message, site_action, optional_payload)
+# usage: MnUtilsLogging::SiteAction.instance.log(message, site_action, optional_payload)
 #
-#    eg: MnUtils::SiteAction.instance.log(
+#    eg: MnUtilsLogging::SiteAction.instance.log(
 #           "Login attempted with non-existent email",
 #           :login_attempt_nonexistent_email,
 #           {_email: "fish@banana.com", _request_ip: "123.123.123.123"}
@@ -19,7 +19,7 @@ require 'singleton'
 # The optional payload should be a simple flat hash with all keys starting
 # with an underscore _ and all values being strings
 
-module MnUtils
+module MnUtilsLogging
   class SiteAction
 
     include Singleton
@@ -91,7 +91,7 @@ module MnUtils
 
       # check for duplicates, and throw a tantrum if any are found
       tmp_map = {}
-      stuff.each do |k, arr|
+      @_site_actions_and_groups.each do |k, arr|
         arr.each do |v|
           raise ArgumentError, "Site action #{v} is declared more than once" \
               if tmp_map.key? v
@@ -206,4 +206,4 @@ module MnUtils
 
   end # of class SiteAction
 
-end # of module MnUtils
+end # of module MnUtilsLogging
