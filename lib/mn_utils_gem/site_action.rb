@@ -39,6 +39,16 @@ module MnUtils
               :reg_attempt_invalid_email,
               :reg_attempt_invalid_password,
               :reg_attempt_invalid_username,
+              :reg_conf_link_email_success,
+              :reg_conf_link_email_fail,
+              :reg_welcome_email_success,
+              :reg_welcome_email_fail,
+              :reg_conf_remind_email_success,
+              :reg_conf_remind_email_fail,
+              :bn_reg_email_success,
+              :bn_reg_email_fail,
+              :insight_welcome_email_success,
+              :insight_welcome_email_fail
           ],
           auth: [
               :login_success_via_email,
@@ -47,8 +57,36 @@ module MnUtils
               :login_attempt_invalid_email,
               :login_attempt_nonexistent_email,
               :login_attempt_invalid_password,
-              :login_attempt_incorrect_password,
+              :login_attempt_incorrect_password
           ],
+          account: [
+              :email_change_conf_link_email_success,
+              :email_change_conf_link_email_fail,
+              :pwd_reset_link_email_success,
+              :pwd_reset_link_email_fail,
+              :dereg_rqst_email_success,
+              :dereg_rqst_email_fail
+          ],
+          pm: [
+              :pm_notif_email_success,
+              :pm_notif_email_fail
+          ],
+          talk: [
+              :watch_thread_notif_email_success,
+              :watch_thread_notif_email_fail,
+              :media_rqst_welcome_email_success,
+              :media_rqst_welcome_email_fail,
+              :mention_notif_email_success,
+              :mention_notif_email_fail
+          ],
+          admin: [
+              :admin_email_success,
+              :admin_email_fail,
+          ],
+          misc: [
+              :unknown_email_success,
+              :unknown_email_fail
+          ]
       }.freeze
 
       # check for duplicates, and throw a tantrum if any are found

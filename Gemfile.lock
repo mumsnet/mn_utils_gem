@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    mn_utils_gem (1.3.0)
+    mn_utils_gem (1.4.0)
       aws-sdk-cloudwatch
       gelf
       request_store
