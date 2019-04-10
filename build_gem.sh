@@ -10,8 +10,8 @@ if [ ! -f .env ]; then
 fi
 docker-compose build
 docker-compose run test bundle
-docker-compose run test bundle exec rake install
 docker-compose run test bundle exec rake spec
+docker-compose run test bundle exec rake install
 
 cd pkg
 LATEST_FILE=`ls -rt|tail -1`

@@ -2,6 +2,8 @@ require 'gelf'
 require 'aws-sdk-cloudwatch'
 require 'request_store'
 require 'singleton'
+require 'active_support'
+require 'active_support/core_ext'
 
 # SiteAction class to log important site actions to Graylog
 # and send a matching metric to Cloudwatch
@@ -106,6 +108,9 @@ module MnUtilsLogging
       # create a reverse map of all site actions and their corresponding group
       # for quick lookups by the code
       @_site_action_group_map = Hash[*(@_site_actions_and_groups.map {|k, arr| arr.map {|v| [v, k]}}.flatten)].freeze
+
+      # setup the logger
+      @logger = defined?(Rails) ? Rails.logger : Logger.new(STDOUT)
     end
 
     def log(message, site_action, payload = {})
@@ -196,10 +201,10 @@ module MnUtilsLogging
         n = GELF::Notifier.new(ENV['GRAYLOG_GELF_UDP_HOST'], ENV['GRAYLOG_GELF_UDP_PORT'])
         n.notify! payload
       else
-        Rails.logger.debug("Payload for Graylog: #{payload}")
+        @logger.debug("Payload for Graylog: #{payload}")
       end
     rescue Exception => e
-      Rails.logger.error e
+      @logger.error e
     end
 
     def send_to_cloudwatch(site_action_group, site_action, site_hostname)
@@ -223,10 +228,10 @@ module MnUtilsLogging
         cw = Aws::CloudWatch::Client.new
         cw.put_metric_data(cloudwatch_payload)
       else
-        Rails.logger.debug("Payload for Cloudwatch: #{cloudwatch_payload}")
+        @logger.debug("Payload for Cloudwatch: #{cloudwatch_payload}")
       end
     rescue Exception => e
-      Rails.logger.error e
+      @logger.error e
     end
 
   end # of class SiteAction

@@ -7,7 +7,9 @@ gemspec
 
 gem 'gelf'
 gem 'aws-sdk-cloudwatch'
+gem 'aws-sdk-sqs'
 gem 'request_store'
+gem 'activesupport'
 
 group :development, :test do
   gem 'rspec', require: false

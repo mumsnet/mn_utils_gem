@@ -51,13 +51,17 @@ module MnUtilsEmail
           fallback_text: fallback_text
       }
 
+      # add the request ID if available
+      request_id = ''
+      request_id = RequestStore.store[:request_id] if RequestStore.store[:request_id]
+      message_body[:request_id] = request_id
+
       # put it on the SQS queue
       sqs = Aws::SQS::Client.new()
       sqs.send_message(
-          queue_url: ENV['SQS_MAIL_QUEUE_URL'],
-          message_body: message_body
+          queue_url: ENV['SQS_MAIL2_QUEUE_URL'],
+          message_body: message_body.to_json
       )
-
     end # of method enqueue
 
   end # of class TransactionalEmail
