@@ -170,7 +170,7 @@ module MnUtilsLogging
       # add other data to the payload if available
       full_payload[:_srv_code] = ENV['SRV_CODE'] if ENV.key? 'SRV_CODE'
       full_payload[:_site_hostname] = ENV['SITE_HOSTNAME'] if ENV.key? 'SITE_HOSTNAME'
-      full_payload[:_request_id] = RequestStore.store[:request_id] if RequestStore.store[:request_id]
+      full_payload[:_request_id] ||= RequestStore.store[:request_id] if RequestStore.store[:request_id]
       full_payload[:_remote_ip] = RequestStore.store[:remote_ip] if RequestStore.store[:remote_ip]
 
       # send it off
