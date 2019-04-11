@@ -9,6 +9,7 @@ gem 'gelf'
 gem 'aws-sdk-cloudwatch'
 gem 'aws-sdk-sqs'
 gem 'request_store'
+gem 'httparty'
 gem 'activesupport'
 
 group :development, :test do
