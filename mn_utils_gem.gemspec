@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
   spec.files         = [
       'lib/mn_utils_gem.rb',
       'lib/mn_utils_gem/version.rb',
-      'lib/mn_utils_gem/site_action.rb'
+      'lib/mn_utils_gem/site_action.rb',
       'lib/mn_utils_gem/gui.rb'
   ]
   spec.require_paths = ["lib"]
@@ -22,7 +22,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'gelf'
   spec.add_runtime_dependency 'aws-sdk-cloudwatch'
   spec.add_runtime_dependency 'request_store'
-  spec.add_runtime_dependecy 'httparty', '~> 0.13.7'
+  spec.add_runtime_dependency 'httparty'
 
   spec.add_development_dependency "bundler", "~> 1.17"
   spec.add_development_dependency "rake", "~> 10.0"
