@@ -15,14 +15,17 @@ Gem::Specification.new do |spec|
       'lib/mn_utils_gem.rb',
       'lib/mn_utils_gem/version.rb',
       'lib/mn_utils_gem/site_action.rb',
-      'lib/mn_utils_gem/gui.rb'
+      'lib/mn_utils_gem/gui.rb',
+      'lib/mn_utils_gem/transactional_email.rb'
   ]
   spec.require_paths = ["lib"]
 
   spec.add_runtime_dependency 'gelf'
   spec.add_runtime_dependency 'aws-sdk-cloudwatch'
+  spec.add_runtime_dependency 'aws-sdk-sqs'
   spec.add_runtime_dependency 'request_store'
   spec.add_runtime_dependency 'httparty'
+  spec.add_runtime_dependency 'activesupport'
 
   spec.add_development_dependency "bundler", "~> 1.17"
   spec.add_development_dependency "rake", "~> 10.0"

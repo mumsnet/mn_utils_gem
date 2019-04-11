@@ -7,8 +7,10 @@ gemspec
 
 gem 'gelf'
 gem 'aws-sdk-cloudwatch'
+gem 'aws-sdk-sqs'
 gem 'request_store'
-gem 'httparty', '~> 0.13.7'
+gem 'httparty'
+gem 'activesupport'
 
 group :development, :test do
   gem 'rspec', require: false

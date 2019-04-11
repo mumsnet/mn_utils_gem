@@ -2,6 +2,8 @@ require 'gelf'
 require 'aws-sdk-cloudwatch'
 require 'request_store'
 require 'singleton'
+require 'active_support'
+require 'active_support/core_ext'
 
 # SiteAction class to log important site actions to Graylog
 # and send a matching metric to Cloudwatch
@@ -79,9 +81,16 @@ module MnUtilsLogging
               :mention_notif_email_success,
               :mention_notif_email_fail
           ],
+          voting: [
+              :aibu_vote_success
+          ],
           admin: [
               :admin_email_success,
               :admin_email_fail,
+          ],
+          email: [
+              :send_email_success,
+              :send_email_fail
           ],
           misc: [
               :unknown_email_success,
@@ -102,6 +111,9 @@ module MnUtilsLogging
       # create a reverse map of all site actions and their corresponding group
       # for quick lookups by the code
       @_site_action_group_map = Hash[*(@_site_actions_and_groups.map {|k, arr| arr.map {|v| [v, k]}}.flatten)].freeze
+
+      # setup the logger
+      @logger = defined?(Rails) ? Rails.logger : Logger.new(STDOUT)
     end
 
     def log(message, site_action, payload = {})
@@ -147,21 +159,42 @@ module MnUtilsLogging
           unless ENV.key? 'SRV_CODE'
       end
 
+      site_action_group = @_site_action_group_map[site_action]
+
       # setup the full payload
       full_payload = payload.dup
       full_payload[:short_message] = message
-      full_payload[:_site_action_group] = @_site_action_group_map[site_action]
+      full_payload[:_site_action_group] = site_action_group
       full_payload[:_site_action] = site_action
 
       # add other data to the payload if available
       full_payload[:_srv_code] = ENV['SRV_CODE'] if ENV.key? 'SRV_CODE'
       full_payload[:_site_hostname] = ENV['SITE_HOSTNAME'] if ENV.key? 'SITE_HOSTNAME'
-      full_payload[:_request_id] = RequestStore.store[:request_id] if RequestStore.store[:request_id]
+      full_payload[:_request_id] ||= RequestStore.store[:request_id] if RequestStore.store[:request_id]
       full_payload[:_remote_ip] = RequestStore.store[:remote_ip] if RequestStore.store[:remote_ip]
 
       # send it off
       send_to_graylog full_payload
-      send_to_cloudwatch full_payload
+      send_to_cloudwatch(site_action_group, site_action, full_payload[:_site_hostname])
+    end
+
+    def log_metric_only(site_action)
+      
+      # validate the parameters
+      raise ArgumentError, 'site_action must be a symbol' \
+        unless site_action.is_a?(Symbol)
+      raise ArgumentError, 'site_action value is not in allowed list' \
+        unless @_site_action_group_map.key? site_action
+
+      # validate required environment variables if we are in production
+      if ENV.key?( 'CLOUDWATCH_ROOT_NAMESPACE')
+        raise ArgumentError, "ENV['SITE_HOSTNAME'] is required" \
+          unless ENV.key? 'SITE_HOSTNAME'
+      end
+
+      site_action_group = @_site_action_group_map[site_action]
+
+      send_to_cloudwatch(site_action_group, site_action, ENV['SITE_HOSTNAME'])
     end
 
     private
@@ -171,17 +204,17 @@ module MnUtilsLogging
         n = GELF::Notifier.new(ENV['GRAYLOG_GELF_UDP_HOST'], ENV['GRAYLOG_GELF_UDP_PORT'])
         n.notify! payload
       else
-        Rails.logger.debug("Payload for Graylog: #{payload}")
+        @logger.debug("Payload for Graylog: #{payload}")
       end
     rescue Exception => e
-      Rails.logger.error e
+      @logger.error e
     end
 
-    def send_to_cloudwatch(payload)
+    def send_to_cloudwatch(site_action_group, site_action, site_hostname)
       cloudwatch_payload = {
           namespace: "mn/test",
           metric_data: [{
-              metric_name: payload[:_site_action],
+              metric_name: site_action,
               dimensions: [{
                   name: "site_hostname",
                   value: "localhost"
@@ -192,16 +225,16 @@ module MnUtilsLogging
       }
       if ENV.key? ('CLOUDWATCH_ROOT_NAMESPACE')
         root_namespace = ENV['CLOUDWATCH_ROOT_NAMESPACE']
-        second_namespace = payload[:_site_action_group]
+        second_namespace = site_action_group
         cloudwatch_payload[:namespace] = "#{root_namespace}/#{second_namespace}"
-        cloudwatch_payload[:metric_data][0][:dimensions][0][:value] = payload[:_site_hostname]
+        cloudwatch_payload[:metric_data][0][:dimensions][0][:value] = site_hostname
         cw = Aws::CloudWatch::Client.new
         cw.put_metric_data(cloudwatch_payload)
       else
-        Rails.logger.debug("Payload for Cloudwatch: #{cloudwatch_payload}")
+        @logger.debug("Payload for Cloudwatch: #{cloudwatch_payload}")
       end
     rescue Exception => e
-      Rails.logger.error e
+      @logger.error e
     end
 
   end # of class SiteAction

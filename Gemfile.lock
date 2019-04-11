@@ -1,8 +1,10 @@
 PATH
   remote: .
   specs:
-    mn_utils_gem (1.6.0)
+    mn_utils_gem (1.9.0)
+      activesupport
       aws-sdk-cloudwatch
+      aws-sdk-sqs
       gelf
       httparty
       request_store
@@ -38,6 +40,9 @@ GEM
       aws-partitions (~> 1.0)
       aws-sigv4 (~> 1.1)
       jmespath (~> 1.0)
+    aws-sdk-sqs (1.13.0)
+      aws-sdk-core (~> 3, >= 3.48.2)
+      aws-sigv4 (~> 1.1)
     aws-sigv4 (1.1.0)
       aws-eventstream (~> 1.0, >= 1.0.2)
     builder (3.2.3)
@@ -110,7 +115,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  activesupport
   aws-sdk-cloudwatch
+  aws-sdk-sqs
   bundler (~> 1.17)
   gelf
   httparty (~> 0.13.7)
