@@ -22,6 +22,11 @@ module MnUtilsEmail
 
     include Singleton
 
+    def initialize
+      # setup the logger
+      @logger = defined?(Rails) ? Rails.logger : Logger.new(STDOUT)
+    end
+
     def enqueue(message_type:, to_address:, subject:, fallback_text:, template_fields: {}, cc_addresses: '')
 
       # validate the parameters
@@ -35,10 +40,6 @@ module MnUtilsEmail
           if fallback_text.blank?
       raise ArgumentError, "to_address #{to_address} is not a valid email address" \
           unless to_address =~ /@/
-
-      # validate environment variables that we need
-      raise ArgumentError, "ENV['SQS_MAIL2_QUEUE_URL'] is required" \
-          unless ENV.key? 'SQS_MAIL2_QUEUE_URL'
 
       # construct the message body for SQS
       message_body = {
@@ -56,12 +57,17 @@ module MnUtilsEmail
       request_id = RequestStore.store[:request_id] if RequestStore.store[:request_id]
       message_body[:request_id] = request_id
 
-      # put it on the SQS queue
-      sqs = Aws::SQS::Client.new()
-      sqs.send_message(
-          queue_url: ENV['SQS_MAIL2_QUEUE_URL'],
-          message_body: message_body.to_json
-      )
+      if ENV.key? 'SQS_MAIL2_QUEUE_URL'
+        # put it on the SQS queue
+        sqs = Aws::SQS::Client.new()
+        sqs.send_message(
+            queue_url: ENV['SQS_MAIL2_QUEUE_URL'],
+            message_body: message_body.to_json
+        )
+      else
+        @logger.debug("Payload for SQS: #{message_body}")
+      end
+
     end # of method enqueue
 
   end # of class TransactionalEmail
