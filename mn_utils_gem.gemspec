@@ -15,7 +15,7 @@ Gem::Specification.new do |spec|
       'lib/mn_utils_gem.rb',
       'lib/mn_utils_gem/version.rb',
       'lib/mn_utils_gem/site_action.rb',
-      'lib/mn_utils_gem/transaction_email.rb'
+      'lib/mn_utils_gem/transactional_email.rb'
   ]
   spec.require_paths = ["lib"]
 
