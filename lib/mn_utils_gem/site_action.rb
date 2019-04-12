@@ -50,7 +50,9 @@ module MnUtilsLogging
               :bn_reg_email_success,
               :bn_reg_email_fail,
               :insight_welcome_email_success,
-              :insight_welcome_email_fail
+              :insight_welcome_email_fail,
+              :bn_reg_success,
+              :bn_reg_fail
           ],
           auth: [
               :login_success_via_email,
