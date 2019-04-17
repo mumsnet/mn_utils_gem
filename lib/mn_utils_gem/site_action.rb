@@ -49,6 +49,8 @@ module MnUtilsLogging
               :reg_conf_remind_email_fail,
               :bn_reg_email_success,
               :bn_reg_email_fail,
+              :bn_reg_activation_email_success,
+              :bn_reg_activation_email_fail,
               :insight_welcome_email_success,
               :insight_welcome_email_fail,
               :bn_reg_success,
