@@ -16,7 +16,8 @@ Gem::Specification.new do |spec|
       'lib/mn_utils_gem/version.rb',
       'lib/mn_utils_gem/site_action.rb',
       'lib/mn_utils_gem/gui.rb',
-      'lib/mn_utils_gem/transactional_email.rb'
+      'lib/mn_utils_gem/transactional_email.rb',
+      'lib/mn_utils_gem/sso.rb',
   ]
   spec.require_paths = ["lib"]
 
@@ -26,6 +27,8 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'request_store'
   spec.add_runtime_dependency 'httparty'
   spec.add_runtime_dependency 'activesupport'
+  spec.add_runtime_dependency 'redis'
+  spec.add_runtime_dependency 'semian'
 
   spec.add_development_dependency "bundler", "~> 1.17"
   spec.add_development_dependency "rake", "~> 10.0"
