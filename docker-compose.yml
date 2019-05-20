@@ -6,5 +6,5 @@ services:
       - .:/mn_utils_gem
     tty: true
     stdin_open: true
-#    env_file:
-#      - .env
+    env_file:
+      - .env

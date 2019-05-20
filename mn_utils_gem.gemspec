@@ -14,6 +14,7 @@ Gem::Specification.new do |spec|
   spec.files         = [
       'lib/mn_utils_gem.rb',
       'lib/mn_utils_gem/version.rb',
+      'lib/mn_utils_gem/string_to_bool.rb',
       'lib/mn_utils_gem/site_action.rb',
       'lib/mn_utils_gem/gui.rb',
       'lib/mn_utils_gem/transactional_email.rb',

@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    mn_utils_gem (1.15.0)
+    mn_utils_gem (1.15.2)
       activesupport
       aws-sdk-cloudwatch
       aws-sdk-sqs
