@@ -4,7 +4,7 @@ module MnUtilsGlobal
   class Gui
 
     def self.render_component(component)
-      Rails.cache.fetch("gui-component-#{component}", expires_in: 1.hour) do
+      Rails.cache.fetch(['MnUtilsGlobal', 'Gui', 'render_component', component], expires_in: 1.hour) do
         render_component_html(component)
       end
     end
@@ -14,12 +14,13 @@ module MnUtilsGlobal
     def self.render_component_html(component)
       validate_component(component)
       response = HTTParty.get("#{ENV['SRV_GUI_URL']}/service/gui/api/v1/component/#{component}", { timeout: 1 })
-      json = JSON.parse(response)
+      json = JSON.parse(response.body)
       validate_json(json)
       json['html'].html_safe
     rescue StandardError => e
       logger = defined?(Rails) ? Rails.logger : Logger.new(STDOUT)
-      logger.error("ViewHelper::render_gui_component error #{e.backtrace}")
+      logger.error e.message
+      logger.error e.backtrace.join("\n")
       return ''
     end
 

@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    mn_utils_gem (1.15.2)
+    mn_utils_gem (1.15.5)
       activesupport
       aws-sdk-cloudwatch
       aws-sdk-sqs
@@ -85,7 +85,7 @@ GEM
       rake (>= 0.8.7)
       thor (>= 0.19.0, < 2.0)
     rake (10.5.0)
-    redis (4.1.1)
+    redis (4.1.2)
     request_store (1.4.1)
       rack (>= 1.4)
     rspec (3.8.0)
