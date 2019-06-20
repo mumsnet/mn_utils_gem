@@ -81,7 +81,6 @@ module MnUtilsAuth
     def redis_server
       @redis_server ||= Redis.new(
           url: ENV['MN_REDIS_URL'],
-          ssl: ENV['MN_REDIS_SSL'].to_bool,
           semian: {
               name: 'user-service',
               tickets: 4,
