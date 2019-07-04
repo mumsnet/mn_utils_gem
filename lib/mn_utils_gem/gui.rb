@@ -3,17 +3,17 @@ require 'httparty'
 module MnUtilsGlobal
   class Gui
 
-    def self.render_component(component)
-      Rails.cache.fetch(['MnUtilsGlobal', 'Gui', 'render_component', component], expires_in: 1.hour) do
-        render_component_html(component)
+    def self.render_component(component, options = {})
+      Rails.cache.fetch(['MnUtilsGlobal', 'Gui', 'render_component', component, options.to_s], expires_in: 1.hour) do
+        render_component_html(component, options)
       end
     end
 
     private
 
-    def self.render_component_html(component)
+    def self.render_component_html(component, options = {})
       validate_component(component)
-      response = HTTParty.get("#{ENV['SRV_GUI_URL']}/service/gui/api/v1/component/#{component}", { timeout: 1 })
+      response = HTTParty.get("#{ENV['SRV_GUI_URL']}/service/gui/api/v1/component/#{component}", { timeout: 1, query: options })
       json = JSON.parse(response.body)
       validate_json(json)
       json['html'].html_safe

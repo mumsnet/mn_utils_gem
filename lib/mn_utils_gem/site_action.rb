@@ -71,7 +71,9 @@ module MnUtilsLogging
               :pwd_reset_link_email_success,
               :pwd_reset_link_email_fail,
               :dereg_rqst_email_success,
-              :dereg_rqst_email_fail
+              :dereg_rqst_email_fail,
+              :email_change_conf_email_success,
+              :email_change_conf_email_fail
           ],
           pm: [
               :pm_notif_email_success,
