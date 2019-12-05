@@ -13,7 +13,7 @@ module MnUtilsGlobal
 
     def self.render_component_html(component, options = {})
       validate_component(component)
-      response = HTTParty.get("#{ENV['SRV_GUI_URL']}/service/gui/api/v1/component/#{component}", { timeout: 1, query: options })
+      response = HTTParty.get("#{ENV['SRV_GUI_URL']}/api/v1/component/#{component}", { timeout: 1, query: options })
       json = JSON.parse(response.body)
       validate_json(json)
       json['html'].html_safe
