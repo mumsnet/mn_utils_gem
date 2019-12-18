@@ -88,7 +88,9 @@ module MnUtilsLogging
               :mention_notif_email_fail
           ],
           voting: [
-              :aibu_vote_success
+              :aibu_vote_success,
+              :aibu_thread_email_success,
+              :aibu_thread_email_fail
           ],
           admin: [
               :admin_email_success,
