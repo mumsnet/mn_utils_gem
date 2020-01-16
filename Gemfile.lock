@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    mn_utils_gem (1.15.10)
+    mn_utils_gem (1.15.11)
       activesupport
       aws-sdk-cloudwatch
       aws-sdk-sqs
@@ -109,7 +109,7 @@ GEM
       rspec-mocks (~> 3.8.0)
       rspec-support (~> 3.8.0)
     rspec-support (3.8.0)
-    semian (0.9.1)
+    semian (0.10.0)
     thor (0.20.3)
     thread_safe (0.3.6)
     tzinfo (1.2.5)

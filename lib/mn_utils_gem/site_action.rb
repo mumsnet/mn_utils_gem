@@ -103,6 +103,12 @@ module MnUtilsLogging
           misc: [
               :unknown_email_success,
               :unknown_email_fail
+          ],
+          bng: [
+              :add_name,
+              :update_name,
+              :voted_on_name,
+              :shortlisted_name
           ]
       }.freeze
 
