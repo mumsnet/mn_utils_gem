@@ -1,3 +1,3 @@
 module MnUtilsGem
-  VERSION = "1.15.12"
+  VERSION = "1.15.13"
 end
