@@ -73,7 +73,10 @@ module MnUtilsLogging
               :dereg_rqst_email_success,
               :dereg_rqst_email_fail,
               :email_change_conf_email_success,
-              :email_change_conf_email_fail
+              :email_change_conf_email_fail,
+              :donation_confirmation_success,
+              :subscription_confirmation_fail,
+              :subscription_confirmation_success
           ],
           pm: [
               :pm_notif_email_success,
@@ -193,7 +196,7 @@ module MnUtilsLogging
     end
 
     def log_metric_only(site_action)
-      
+
       # validate the parameters
       raise ArgumentError, 'site_action must be a symbol' \
         unless site_action.is_a?(Symbol)
