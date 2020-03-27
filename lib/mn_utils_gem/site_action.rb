@@ -79,7 +79,7 @@ module MnUtilsLogging
               :subscription_confirmation_success,
               :donation_confirmation_fail,
               :subscription_cancellation_fail,
-              :subscription_confirmation_fail
+              :subscription_cancellation_success
           ],
           pm: [
               :pm_notif_email_success,
